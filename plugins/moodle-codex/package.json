@@ -1,0 +1,21 @@
+{
+  "name": "moodle-codex",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Read-only Moodle MCP server for Codex.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test",
+    "verify:live": "node scripts/verify-live.mjs"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "pdfjs-dist": "6.3.289",
+    "yauzl": "3.4.0",
+    "zod": "4.6.5"
+  }
+}

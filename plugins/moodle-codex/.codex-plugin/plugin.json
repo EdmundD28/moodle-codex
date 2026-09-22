@@ -1,0 +1,31 @@
+{
+  "name": "moodle-codex",
+  "version": "0.1.0",
+  "description": "Read Moodle courses, files, forums, feedback, deadlines, and changes from Codex.",
+  "author": {
+    "name": "Edmund Dai"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Moodle for Codex",
+    "shortDescription": "Read Moodle safely from Codex.",
+    "longDescription": "Connects Codex to a Moodle site's official Web Services API through a local, read-only MCP server for courses, files, forums, feedback, deadlines, and change checks.",
+    "developerName": "Edmund Dai",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Course data"
+    ],
+    "defaultPrompt": [
+      "Show my Moodle courses.",
+      "What Moodle deadlines are coming up?",
+      "Check my Moodle assignment status.",
+      "Summarize the latest changes in my course."
+    ],
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo.png",
+    "brandColor": "#F98012"
+  },
+  "mcpServers": "./.mcp.json"
+}

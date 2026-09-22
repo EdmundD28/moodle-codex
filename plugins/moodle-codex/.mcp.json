@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "moodle": {
+      "command": "node",
+      "cwd": ".",
+      "args": [
+        "./server.mjs"
+      ],
+      "enabled": true,
+      "enabled_tools": [
+        "check_connection",
+        "get_site_info",
+        "list_courses",
+        "get_course_contents",
+        "list_assignments",
+        "get_submission_status",
+        "get_upcoming_deadlines",
+        "list_course_files",
+        "download_course_file",
+        "read_course_file",
+        "list_course_forums",
+        "list_forum_discussions",
+        "get_forum_posts",
+        "get_assignment_feedback",
+        "get_grading_definition",
+        "check_course_changes"
+      ],
+      "default_tools_approval_mode": "approve",
+      "startup_timeout_sec": 15,
+      "tool_timeout_sec": 120,
+      "env_vars": [
+        "MOODLE_BASE_URL",
+        "MOODLE_TOKEN",
+        "MOODLE_TIMEOUT_MS",
+        "MOODLE_DATA_DIR"
+      ],
+      "env": {}
+    }
+  }
+}

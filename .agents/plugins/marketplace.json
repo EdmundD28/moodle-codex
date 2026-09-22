@@ -1,0 +1,20 @@
+{
+  "name": "moodle-codex",
+  "interface": {
+    "displayName": "Moodle for Codex"
+  },
+  "plugins": [
+    {
+      "name": "moodle-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/moodle-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

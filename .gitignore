@@ -1,0 +1,12 @@
+node_modules/
+.npm-cache/
+.env
+.env.*
+!.env.example
+live-data/
+moodle-codex-data/
+test-data-*/
+*.token
+*.log
+.DS_Store
+Thumbs.db
