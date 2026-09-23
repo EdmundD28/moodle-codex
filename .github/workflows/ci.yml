@@ -28,6 +28,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate secure callback handling without opening a window
-        shell: pwsh
-        run: ./plugins/moodle-codex/scripts/configure-mobile.ps1 -SelfTest
+      - name: Validate the exact double-click launcher through Windows PowerShell
+        shell: cmd
+        run: plugins\moodle-codex\Setup-Moodle.cmd -SelfTest

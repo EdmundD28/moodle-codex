@@ -37,12 +37,12 @@ The repository is also a Codex marketplace. `.agents/plugins/marketplace.json` p
 
 ## Reproduce it on Windows
 
-Prerequisites: Git, PowerShell 7, Node.js 22.13 or later, and a Codex or ChatGPT desktop build that supports plugins.
+Prerequisites: Git, Windows PowerShell 5.1 or PowerShell 7, Node.js 22.13 or later, and a Codex or ChatGPT desktop build that supports plugins.
 
 ```powershell
 git clone https://github.com/EdmundD28/moodle-codex.git
 cd moodle-codex
-pwsh -File .\scripts\bootstrap.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1
 ```
 
 The bootstrap installs exactly the versions in `package-lock.json` and runs the offline test suite. It does not ask for or store Moodle credentials.
@@ -53,10 +53,10 @@ For UNSW Moodle, launch the standalone secure setup window by double-clicking:
 plugins\moodle-codex\Setup-Moodle.cmd
 ```
 
-Or start the same GUI from PowerShell:
+Or start the same GUI from Windows PowerShell:
 
 ```powershell
-pwsh -File .\plugins\moodle-codex\scripts\configure-mobile.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\plugins\moodle-codex\scripts\configure-mobile.ps1
 ```
 
 The GUI generates a fresh per-attempt correlation value, opens the UNSW Moodle mobile sign-in flow, and accepts the complete `moodlemobile://` callback in a masked local field. It verifies the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
@@ -88,7 +88,7 @@ For macOS or Linux, run `npm ci` and `npm test` inside `plugins/moodle-codex`, e
 The offline demonstration is deterministic and makes no Moodle requests:
 
 ```powershell
-pwsh -File .\scripts\bootstrap.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1
 ```
 
 With credentials configured, the live verifier selects the newest visible course by default and exercises only capabilities available to that account:

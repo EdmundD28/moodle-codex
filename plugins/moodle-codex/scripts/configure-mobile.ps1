@@ -9,6 +9,19 @@ param(
 $ErrorActionPreference = 'Stop'
 $baseUrl = 'https://moodle.telt.unsw.edu.au'
 
+function ConvertTo-LowerHex([byte[]]$Bytes) {
+    return -join ($Bytes | ForEach-Object { $_.ToString('x2') })
+}
+
+function Get-Md5Hex([string]$Value) {
+    $md5 = [Security.Cryptography.MD5]::Create()
+    try {
+        return ConvertTo-LowerHex ($md5.ComputeHash([Text.Encoding]::UTF8.GetBytes($Value)))
+    } finally {
+        $md5.Dispose()
+    }
+}
+
 function Convert-MobileCallback([string]$Value, [string]$ExpectedPassport) {
     $value = $Value.Trim()
     if ($value -notmatch '^moodlemobile://token=([A-Za-z0-9+/=%]+)$') {
@@ -21,17 +34,14 @@ function Convert-MobileCallback([string]$Value, [string]$ExpectedPassport) {
     if ($parts.Count -notin @(2,3) -or $parts[1] -notmatch '^[a-fA-F0-9]{32}$') {
         throw 'The callback link has an invalid format.'
     }
-    $md5 = [Security.Cryptography.MD5]::Create()
-    try {
-        $expected = [Convert]::ToHexString($md5.ComputeHash([Text.Encoding]::UTF8.GetBytes($baseUrl + $ExpectedPassport))).ToLowerInvariant()
-    } finally { $md5.Dispose() }
+    $expected = Get-Md5Hex ($baseUrl + $ExpectedPassport)
     if ($parts[0] -cne $expected) { throw 'This link does not belong to the current UNSW login attempt.' }
     return $parts[1]
 }
 
 if ($SelfTest) {
     $p = 'self-test'
-    $hash = [Convert]::ToHexString([Security.Cryptography.MD5]::HashData([Text.Encoding]::UTF8.GetBytes($baseUrl + $p))).ToLowerInvariant()
+    $hash = Get-Md5Hex ($baseUrl + $p)
     $fake = '0' * 32
     $link = 'moodlemobile://token=' + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($hash + ':::' + $fake + ':::unused'))
     if ((Convert-MobileCallback $link $p) -ne $fake) { throw 'Valid callback test failed.' }
@@ -45,9 +55,14 @@ if ($SelfTest) {
 }
 
 if ([string]::IsNullOrWhiteSpace($Passport)) {
-    $bytes = [byte[]]::new(16)
-    [Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
-    $Passport = [Convert]::ToHexString($bytes).ToLowerInvariant()
+    $bytes = New-Object byte[] 16
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+    try {
+        $rng.GetBytes($bytes)
+    } finally {
+        $rng.Dispose()
+    }
+    $Passport = ConvertTo-LowerHex $bytes
 }
 if ($Passport -notmatch '^[A-Za-z0-9]{16,128}$') {
     throw 'Passport must contain 16 to 128 letters or digits.'
