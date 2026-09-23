@@ -31,6 +31,22 @@ API references: https://github.com/moodle/moodle/blob/MOODLE_405_STABLE/mod/foru
 - MOODLE_TOKEN: a Web Services token issued by that Moodle site
 - MOODLE_TIMEOUT_MS: optional request timeout from 1000 to 120000 milliseconds
 
+## Standalone UNSW setup GUI
+
+Double-click `Setup-Moodle.cmd`, or run:
+
+```powershell
+pwsh -File .\scripts\configure-mobile.ps1
+```
+
+The script now owns the complete local setup entrypoint. It generates a fresh alphanumeric passport for the attempt, creates a temporary non-secret status file, opens the UNSW Moodle mobile login URL, and shows a masked input window. After login, copy the complete `moodlemobile://` link from “Click here if the app does not open automatically” and paste it into the GUI. Do not paste the HTTPS address bar URL, an RSS key, a password, or an MFA code.
+
+The GUI validates that the callback belongs to the current attempt, extracts the token only in local memory, verifies `core_webservice_get_site_info`, reports optional missing functions, and saves the verified settings as Windows current-user environment variables. Automatically generated status files are removed when the window closes and never contain the callback or token.
+
+For automated tests, `-SelfTest` validates callback parsing without opening a window, making a network request, or writing settings. `-Passport`, `-StatusPath`, and `-NoBrowser` remain available for controlled integration tests.
+
+## Raw-token fallback
+
 Run scripts/configure.ps1 from PowerShell to enter the URL and token without echoing the token. The script verifies the connection before saving the values as Windows user environment variables. Then fully restart the Codex desktop app so the new process inherits them.
 
 Windows user environment variables are stored for the signed-in user. Do not put the token in this plugin folder, a Git repository, screenshots, or chat messages. Revoke the token in Moodle and remove the MOODLE_TOKEN user environment variable if the token is exposed.

@@ -47,13 +47,25 @@ pwsh -File .\scripts\bootstrap.ps1
 
 The bootstrap installs exactly the versions in `package-lock.json` and runs the offline test suite. It does not ask for or store Moodle credentials.
 
-Configure a restricted Moodle Web Services token:
+For UNSW Moodle, launch the standalone secure setup window by double-clicking:
 
-```powershell
-pwsh -File .\plugins\moodle-codex\scripts\configure.ps1
+```text
+plugins\moodle-codex\Setup-Moodle.cmd
 ```
 
-The token prompt is hidden. The script verifies the site before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. Never commit either value.
+Or start the same GUI from PowerShell:
+
+```powershell
+pwsh -File .\plugins\moodle-codex\scripts\configure-mobile.ps1
+```
+
+The GUI generates a fresh per-attempt correlation value, opens the UNSW Moodle mobile sign-in flow, and accepts the complete `moodlemobile://` callback in a masked local field. It verifies the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
+
+For another Moodle site, or when an administrator has issued a raw restricted Web Services token, use the terminal fallback:
+
+```powershell
+pwsh -File .\plugins\moodle-codex\scripts\configure.ps1 -BaseUrl 'https://moodle.example.edu'
+```
 
 Register this clone as a local marketplace:
 
@@ -98,6 +110,7 @@ The live verifier reports bounded status and counts. It does not prove access to
 ## Known setup traps
 
 - A successful token save does not update an already-running desktop process. Fully restart it and begin a new task.
+- The UNSW setup GUI needs the complete `moodlemobile://` callback link, not the browser's HTTPS address, an RSS key, a password, or an MFA code.
 - If a task says a Moodle tool “is not a function”, use the bundled `scripts/read-tool.mjs` recovery path once; repeated calls cannot repair a stale binding.
 - Moodle single sign-on cookies are not API tokens. If user tokens are disabled, a Moodle administrator must issue a restricted service token.
 - A listed file URL or attachment is metadata, not evidence that file contents were read.

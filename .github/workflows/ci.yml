@@ -23,3 +23,11 @@ jobs:
           cache-dependency-path: plugins/moodle-codex/package-lock.json
       - run: npm ci
       - run: npm test
+
+  setup-gui:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate secure callback handling without opening a window
+        shell: pwsh
+        run: ./plugins/moodle-codex/scripts/configure-mobile.ps1 -SelfTest

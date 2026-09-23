@@ -30,6 +30,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'npm ci failed.' }
     & npm test
     if ($LASTEXITCODE -ne 0) { throw 'npm test failed.' }
+    & (Join-Path $pluginRoot 'scripts\configure-mobile.ps1') -SelfTest
+    if ($LASTEXITCODE -ne 0) { throw 'Moodle setup GUI self-test failed.' }
 }
 finally {
     Pop-Location
@@ -44,7 +46,7 @@ if ($RegisterMarketplace) {
 }
 
 if ($Configure) {
-    & (Join-Path $pluginRoot 'scripts\configure.ps1')
+    & (Join-Path $pluginRoot 'scripts\configure-mobile.ps1')
 }
 
 Write-Host 'PASS: clean dependency install and offline test suite.'
@@ -52,5 +54,5 @@ if (-not $RegisterMarketplace) {
     Write-Host "Next: codex plugin marketplace add `"$repoRoot`""
 }
 if (-not $Configure) {
-    Write-Host 'Next: run plugins\moodle-codex\scripts\configure.ps1 when you are ready to enter a Moodle token.'
+    Write-Host 'Next: double-click plugins\moodle-codex\Setup-Moodle.cmd, or rerun this script with -Configure.'
 }

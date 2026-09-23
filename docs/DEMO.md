@@ -24,7 +24,7 @@ Restart the desktop app, install the plugin from the **Moodle for Codex** market
 检查 Moodle 连接，并告诉我 connected、build 和 feature_set。
 ```
 
-Expected result: `connected: true`, manifest build `0.1.0`, and `feature_set: stages-1-4`. A saved token without this response is not installation proof.
+Expected result: `connected: true`, manifest build `0.1.1`, and `feature_set: stages-1-4`. A saved token without this response is not installation proof.
 
 ## 3. User-facing flow
 

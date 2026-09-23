@@ -2,7 +2,8 @@
 param(
     [string]$Passport,
     [string]$StatusPath,
-    [switch]$SelfTest
+    [switch]$SelfTest,
+    [switch]$NoBrowser
 )
 
 $ErrorActionPreference = 'Stop'
@@ -40,12 +41,26 @@ if ($SelfTest) {
         if (-not $rejected) { throw 'Invalid callback was accepted.' }
     }
     Write-Output 'PASS: callback parsing, attempt binding, invalid input rejection. No network or settings writes.'
-    exit
+    return
 }
 
-if ([string]::IsNullOrWhiteSpace($Passport) -or [string]::IsNullOrWhiteSpace($StatusPath)) {
-    throw 'Passport and StatusPath are required.'
+if ([string]::IsNullOrWhiteSpace($Passport)) {
+    $bytes = [byte[]]::new(16)
+    [Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+    $Passport = [Convert]::ToHexString($bytes).ToLowerInvariant()
 }
+if ($Passport -notmatch '^[A-Za-z0-9]{16,128}$') {
+    throw 'Passport must contain 16 to 128 letters or digits.'
+}
+
+$transientStatus = $false
+if ([string]::IsNullOrWhiteSpace($StatusPath)) {
+    $StatusPath = Join-Path ([IO.Path]::GetTempPath()) ('moodle-codex-setup-' + [Guid]::NewGuid().ToString('N') + '.json')
+    $transientStatus = $true
+}
+
+$launchUrl = $baseUrl + '/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=' +
+    [Uri]::EscapeDataString($Passport) + '&urlscheme=moodlemobile&confirmed=1&oauthsso=0'
 
 function Save-Status([string]$State, [string]$Code = '', [hashtable]$Details = @{}) {
     @{ state = $State; code = $Code; details = $Details; updated = [DateTimeOffset]::UtcNow.ToString('o') } |
@@ -55,23 +70,35 @@ function Save-Status([string]$State, [string]$Code = '', [hashtable]$Details = @
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 $form = New-Object Windows.Forms.Form
-$form.Text = 'UNSW Moodle - local secure setup v2'
-$form.ClientSize = New-Object Drawing.Size(620,220)
+$form.Text = 'UNSW Moodle - secure local setup'
+$form.ClientSize = New-Object Drawing.Size(660,280)
 $form.StartPosition = 'CenterScreen'
 $label = New-Object Windows.Forms.Label
-$label.Text = 'Paste the complete moodlemobile:// link below. Input stays on this computer.'
-$label.SetBounds(20,20,580,40)
+$label.Text = '1. Sign in through the browser.  2. Copy the complete moodlemobile:// link.  3. Paste it below. The token stays on this computer.'
+$label.SetBounds(20,20,620,42)
+$openButton = New-Object Windows.Forms.Button
+$openButton.Text = 'Open Moodle sign-in'
+$openButton.SetBounds(20,68,190,34)
 $inputBox = New-Object Windows.Forms.TextBox
 $inputBox.UseSystemPasswordChar = $true
-$inputBox.SetBounds(20,65,580,28)
+$inputBox.SetBounds(20,116,620,28)
 $button = New-Object Windows.Forms.Button
 $button.Text = 'Verify and save'
-$button.SetBounds(20,108,170,34)
+$button.SetBounds(20,158,190,34)
 $message = New-Object Windows.Forms.Label
-$message.SetBounds(20,155,580,55)
-$form.Controls.AddRange(@($label,$inputBox,$button,$message))
+$message.SetBounds(20,207,620,55)
+$form.Controls.AddRange(@($label,$openButton,$inputBox,$button,$message))
 $form.AcceptButton = $button
 $script:saved = $false
+$openButton.Add_Click({
+    try {
+        Start-Process -FilePath $launchUrl
+        $message.Text = 'Browser opened. Complete sign-in, then paste the complete callback link here.'
+    } catch {
+        Save-Status 'browser_launch_failed' 'browser_launch_failed'
+        $message.Text = 'Could not open the browser. Run the PowerShell setup command to see the error.'
+    }
+})
 $button.Add_Click({
     $button.Enabled = $false
     $message.Text = 'Verifying with UNSW Moodle...'
@@ -132,7 +159,14 @@ $button.Add_Click({
     }
 })
 Save-Status 'waiting_for_local_input'
+$form.Add_Shown({
+    if (-not $NoBrowser) { $openButton.PerformClick() }
+    $inputBox.Focus()
+})
 $null = $form.ShowDialog()
 $inputBox.Clear()
 $form.Dispose()
 if (-not $script:saved) { Save-Status 'closed_without_saving' }
+if ($transientStatus -and (Test-Path -LiteralPath $StatusPath)) {
+    Remove-Item -LiteralPath $StatusPath -Force
+}
