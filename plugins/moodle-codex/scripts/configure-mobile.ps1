@@ -89,7 +89,7 @@ $form.Text = 'UNSW Moodle - secure local setup'
 $form.ClientSize = New-Object Drawing.Size(660,280)
 $form.StartPosition = 'CenterScreen'
 $label = New-Object Windows.Forms.Label
-$label.Text = '1. Sign in through the browser.  2. Copy the complete moodlemobile:// link.  3. Paste it below. The token stays on this computer.'
+$label.Text = '1. Copy the complete moodlemobile:// link.  2. Paste it below. The token stays on this computer.'
 $label.SetBounds(20,20,620,42)
 $openButton = New-Object Windows.Forms.Button
 $openButton.Text = 'Open Moodle sign-in'
@@ -175,7 +175,6 @@ $button.Add_Click({
 })
 Save-Status 'waiting_for_local_input'
 $form.Add_Shown({
-    if (-not $NoBrowser) { $openButton.PerformClick() }
     $inputBox.Focus()
 })
 $null = $form.ShowDialog()

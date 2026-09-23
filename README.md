@@ -59,7 +59,7 @@ Or start the same GUI from Windows PowerShell:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\plugins\moodle-codex\scripts\configure-mobile.ps1
 ```
 
-The GUI generates a fresh per-attempt correlation value, opens the UNSW Moodle mobile sign-in flow, and accepts the complete `moodlemobile://` callback in a masked local field. It verifies the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
+The GUI generates a fresh per-attempt correlation value and accepts the complete `moodlemobile://` callback in a masked local field. It does not open Moodle automatically; use **Open Moodle sign-in** only when you want to launch the sign-in page. It verifies the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
 
 For another Moodle site, or when an administrator has issued a raw restricted Web Services token, use the terminal fallback:
 
