@@ -61,6 +61,52 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\plugins\moodle-codex\s
 
 The GUI generates a fresh per-attempt correlation value and accepts the complete `moodlemobile://` callback in a masked local field. It does not open Moodle automatically; use **Open Moodle sign-in** only when you want to launch the sign-in page. It verifies the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
 
+### Get a UNSW Moodle token manually
+
+This is the complete flow that was tested with UNSW Moodle. Use your own UNSW account. Never share the callback link, token, password, MFA code, or authenticated browser session.
+
+1. **Start a clean Moodle login.** Open UNSW Moodle in the browser you intend to use, sign out from the current Moodle session, and leave that browser open. Signing out here does not revoke an existing API token; it makes the following mobile-login request pass through a fresh sign-in.
+
+2. **Open the local setup window.** Double-click `plugins\moodle-codex\Setup-Moodle.cmd`. The window creates a new random `passport` for this attempt. A passport is only a request correlation value, not a password or token. Keep this setup window open until the flow is complete.
+
+3. **Register the mobile-login request.** Click **Open Moodle sign-in** once. The browser opens a URL equivalent to:
+
+   ```text
+   https://moodle.telt.unsw.edu.au/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=<random-value>&urlscheme=moodlemobile&confirmed=1&oauthsso=0
+   ```
+
+   Do not edit or reuse the generated `passport`. The setup window already holds the matching value for this attempt.
+
+4. **If the page reports `Plugin not enabled or configured`, continue in the same browser session.** In the same tab, open:
+
+   ```text
+   https://moodle.telt.unsw.edu.au/login/index.php
+   ```
+
+   The tested UNSW flow stored the pending mobile-login request in the browser before showing that error. Changing browser, using a private window, clearing cookies, or waiting too long can lose that pending request.
+
+5. **Complete the UNSW sign-in.** Choose the university sign-in option, select **Agree and sign on to Moodle**, and complete any required account or MFA prompts yourself. After authentication, wait for Moodle to redirect. Do not navigate to Dashboard or a course while the redirect is in progress.
+
+6. **Copy the callback link.** On the page showing **Your registration has been confirmed**, right-click **Click here if the app does not open automatically** and choose **Copy link address**. The copied value must begin with:
+
+   ```text
+   moodlemobile://token=
+   ```
+
+   Do not copy the `https://` URL from the browser address bar. Clicking the callback may appear to do nothing when no Moodle app is registered for the `moodlemobile://` protocol; copying its link address is sufficient.
+
+7. **Verify and save locally.** Return to the setup window, paste the complete `moodlemobile://token=...` link into the masked field, and click **Verify and save**. The script checks that the callback belongs to this login attempt, calls Moodle's official API to verify it, and saves the resulting settings only for the current Windows user. Treat the operation as successful only when the window says **Connected and saved**.
+
+8. **Restart and verify Codex.** Fully exit and reopen Codex so the new process inherits the saved environment variables. Install or enable the plugin, start a new task, and ask:
+
+   ```text
+   检查 Moodle 连接，并列出我的课程。
+   ```
+
+The official mobile-service token can have broader permissions than this plugin exposes. This plugin deliberately calls only its fixed read-only tool set, but that does not make the underlying token itself read-only. Revoke it through Moodle and remove the `MOODLE_TOKEN` user environment variable if the callback or token is ever exposed.
+
+If the process fails, close the setup window and start again so it generates a new passport. Do not reuse an old callback, substitute an RSS key, or send credentials through an issue, screenshot, chat, or Git commit.
+
 For another Moodle site, or when an administrator has issued a raw restricted Web Services token, use the terminal fallback:
 
 ```powershell
