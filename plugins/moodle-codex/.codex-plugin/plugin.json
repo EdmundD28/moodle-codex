@@ -1,6 +1,6 @@
 {
   "name": "moodle-codex",
-  "version": "0.1.2+codex.20260924042221",
+  "version": "0.1.2+codex.20260924110727",
   "description": "Read Moodle courses, files, forums, feedback, deadlines, and changes from Codex.",
   "author": {
     "name": "Edmund Dai"

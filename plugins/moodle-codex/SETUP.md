@@ -39,7 +39,7 @@ Double-click `Setup-Moodle.cmd`, or run:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\configure-mobile.ps1
 ```
 
-The script now owns the complete local setup entrypoint. It generates a fresh alphanumeric passport for the attempt, creates a temporary non-secret status file, and shows a masked input window without opening Moodle automatically. Use **Open Moodle sign-in** when you are ready to launch the login page. After login, copy the complete `moodlemobile://` link from “Click here if the app does not open automatically” and paste it into the GUI. Do not paste the HTTPS address bar URL, an RSS key, a password, or an MFA code.
+The script now owns the complete local setup entrypoint. It generates a fresh alphanumeric passport for the attempt, creates a temporary non-secret status file, and shows a masked input window without opening Moodle automatically. The window separates **Obtain token** from **Setup plugin**. Use **Open UNSW Moodle sign-in** when you are ready to launch the tested UNSW login flow; other institutions are not claimed to support this flow. After login, copy the complete `moodlemobile://` link from “Click here if the app does not open automatically” and paste it into the GUI. Do not paste the HTTPS address bar URL, an RSS key, a password, or an MFA code.
 
 The GUI validates that the callback belongs to the current attempt, extracts the token only in local memory, verifies `core_webservice_get_site_info`, reports optional missing functions, and saves the verified settings as Windows current-user environment variables. Automatically generated status files are removed when the window closes and never contain the callback or token.
 

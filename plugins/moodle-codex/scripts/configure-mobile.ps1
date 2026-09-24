@@ -85,30 +85,55 @@ function Save-Status([string]$State, [string]$Code = '', [hashtable]$Details = @
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 $form = New-Object Windows.Forms.Form
-$form.Text = 'UNSW Moodle - secure local setup'
-$form.ClientSize = New-Object Drawing.Size(660,280)
+$form.Text = 'UNSW Moodle - obtain token and setup plugin'
+$form.ClientSize = New-Object Drawing.Size(760,500)
 $form.StartPosition = 'CenterScreen'
-$label = New-Object Windows.Forms.Label
-$label.Text = '1. Copy the complete moodlemobile:// link.  2. Paste it below. The token stays on this computer.'
-$label.SetBounds(20,20,620,42)
+
+$obtainTitle = New-Object Windows.Forms.Label
+$obtainTitle.Text = 'Obtain token (tested for UNSW Moodle only)'
+$obtainTitle.Font = New-Object Drawing.Font($obtainTitle.Font, [Drawing.FontStyle]::Bold)
+$obtainTitle.SetBounds(20,18,720,26)
+
+$obtainSteps = New-Object Windows.Forms.Label
+$obtainSteps.Text = "1. Click Open UNSW Moodle sign-in.`r`n2. In the same browser tab, replace the address bar with https://moodle.telt.unsw.edu.au/login/index.php and complete sign-in.`r`n3. On the confirmation page, right-click the blue link and choose Copy link address."
+$obtainSteps.SetBounds(20,48,720,72)
+
 $openButton = New-Object Windows.Forms.Button
-$openButton.Text = 'Open Moodle sign-in'
-$openButton.SetBounds(20,68,190,34)
+$openButton.Text = 'Open UNSW Moodle sign-in'
+$openButton.SetBounds(20,126,230,36)
+
+$openHelp = New-Object Windows.Forms.Label
+$openHelp.Text = 'This button only registers the UNSW mobile-login request. If Moodle shows "Plugin not enabled or configured", continue with step 2 in the same browser tab.'
+$openHelp.SetBounds(270,126,470,52)
+
+$separator = New-Object Windows.Forms.Label
+$separator.BorderStyle = [Windows.Forms.BorderStyle]::Fixed3D
+$separator.SetBounds(20,190,720,2)
+
+$setupTitle = New-Object Windows.Forms.Label
+$setupTitle.Text = 'Setup plugin'
+$setupTitle.Font = New-Object Drawing.Font($setupTitle.Font, [Drawing.FontStyle]::Bold)
+$setupTitle.SetBounds(20,210,720,26)
+
+$setupSteps = New-Object Windows.Forms.Label
+$setupSteps.Text = 'Paste the complete moodlemobile:// link below. Do not paste the https:// address bar URL. The token stays on this computer.'
+$setupSteps.SetBounds(20,242,720,42)
+
 $inputBox = New-Object Windows.Forms.TextBox
 $inputBox.UseSystemPasswordChar = $true
-$inputBox.SetBounds(20,116,620,28)
+$inputBox.SetBounds(20,292,720,28)
 $button = New-Object Windows.Forms.Button
 $button.Text = 'Verify and save'
-$button.SetBounds(20,158,190,34)
+$button.SetBounds(20,336,190,36)
 $message = New-Object Windows.Forms.Label
-$message.SetBounds(20,207,620,55)
-$form.Controls.AddRange(@($label,$openButton,$inputBox,$button,$message))
+$message.SetBounds(20,392,720,70)
+$form.Controls.AddRange(@($obtainTitle,$obtainSteps,$openButton,$openHelp,$separator,$setupTitle,$setupSteps,$inputBox,$button,$message))
 $form.AcceptButton = $button
 $script:saved = $false
 $openButton.Add_Click({
     try {
         Start-Process -FilePath $launchUrl
-        $message.Text = 'Browser opened. Complete sign-in, then paste the complete callback link here.'
+        $message.Text = 'UNSW mobile-login request opened. Continue steps 2 and 3 above in the same browser tab.'
     } catch {
         Save-Status 'browser_launch_failed' 'browser_launch_failed'
         $message.Text = 'Could not open the browser. Run the PowerShell setup command to see the error.'

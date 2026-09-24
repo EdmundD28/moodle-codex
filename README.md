@@ -59,7 +59,7 @@ Or start the same GUI from Windows PowerShell:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\plugins\moodle-codex\scripts\configure-mobile.ps1
 ```
 
-The GUI generates a fresh per-attempt correlation value and accepts the complete `moodlemobile://` callback in a masked local field. It does not open Moodle automatically; use **Open Moodle sign-in** only when you want to launch the sign-in page. It verifies the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
+The GUI separates **Obtain token** from **Setup plugin**. It generates a fresh per-attempt correlation value and accepts the complete `moodlemobile://` callback in a masked local field. It does not open Moodle automatically; use **Open UNSW Moodle sign-in** only when you want to launch the tested UNSW sign-in flow. Other institutions are not claimed to support this flow. The GUI verifies that the callback belongs to the current attempt and probes Moodle before saving `MOODLE_BASE_URL` and `MOODLE_TOKEN` as current-user environment variables. The callback and token are never written to the repository or shown in the console.
 
 ### Get a UNSW Moodle token manually
 
@@ -69,7 +69,7 @@ This is the complete flow that was tested with UNSW Moodle. Use your own UNSW ac
 
 2. **Open the local setup window.** Double-click `plugins\moodle-codex\Setup-Moodle.cmd`. The window creates a new random `passport` for this attempt. A passport is only a request correlation value, not a password or token. Keep this setup window open until the flow is complete.
 
-3. **Register the mobile-login request.** Click **Open Moodle sign-in** once. The browser opens a URL equivalent to:
+3. **Register the mobile-login request.** Click **Open UNSW Moodle sign-in** once. The browser opens a URL equivalent to:
 
    ```text
    https://moodle.telt.unsw.edu.au/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=<random-value>&urlscheme=moodlemobile&confirmed=1&oauthsso=0
