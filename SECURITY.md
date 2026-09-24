@@ -15,7 +15,8 @@ Do not open a public issue containing a Moodle token, private course material, s
 - Moodle content is untrusted input. Source files are returned as text and are never executed.
 - Downloads are limited to fresh same-origin HTTPS Moodle file URLs and saved under content-addressed `.bin` names.
 - PDF and ZIP parsing runs in a bounded worker. Limits reduce risk but do not make third-party parsers infallible.
-- Local snapshots and downloads may contain private academic data. Protect `MOODLE_DATA_DIR` accordingly.
+- Local snapshots, downloads, progress records and generated dashboards may contain private academic data. Protect `MOODLE_DATA_DIR` accordingly.
+- `record_study_progress` and `write_study_dashboard` are explicit local-write tools. They are scoped by Moodle site and user ID, use atomic files with restrictive creation modes, and never send the recorded state back to Moodle.
 
 ## If a token is exposed
 

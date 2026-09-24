@@ -31,20 +31,24 @@ test("MCP server advertises the intended Moodle-read-only tools and declares loc
         "download_course_file",
         "get_assignment_feedback",
         "get_course_contents",
+        "get_deadline_radar",
         "get_forum_posts",
         "get_grading_definition",
         "get_site_info",
         "get_submission_status",
         "get_upcoming_deadlines",
+        "get_weekly_study_plan",
         "list_assignments",
         "list_course_files",
         "list_course_forums",
         "list_courses",
         "list_forum_discussions",
         "read_course_file",
+        "record_study_progress",
+        "write_study_dashboard",
       ],
     );
-    const localWriters = new Set(["check_course_changes", "download_course_file"]);
+    const localWriters = new Set(["check_course_changes", "download_course_file", "record_study_progress", "write_study_dashboard"]);
     for (const tool of listed.tools) {
       assert.equal(
         tool.annotations?.readOnlyHint,

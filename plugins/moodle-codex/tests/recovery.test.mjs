@@ -15,6 +15,5 @@ test('recovery launches MCP from an unrelated directory and reports missing conf
 test('recovery rejects unapproved tool names before starting a server', () => {
   const r = run('mod_assign_submit_assignment');
   assert.equal(r.status, 1);
-  assert.match(r.stderr, /Unsupported read-only tool/);
+  assert.match(r.stderr, /Unsupported Moodle for Codex tool/);
 });
-

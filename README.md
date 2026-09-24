@@ -4,7 +4,7 @@
 
 # Moodle for Codex
 
-A local-first, read-only Codex plugin for inspecting Moodle courses, assignments, deadlines, files, forums, feedback, rubrics, and course changes through Moodle's official Web Services API.
+A local-first Codex plugin for reading Moodle courses, assignments, deadlines, files, forums, feedback, rubrics, and course changes through Moodle's official Web Services API, then turning that evidence into a deadline radar and study plan.
 
 The project is deliberately narrow: it reads authorized data and can save downloads or change snapshots locally. It cannot submit work, post messages, enrol users, change grades, or silently fall back to browser scraping.
 
@@ -17,8 +17,10 @@ The project is deliberately narrow: it reads authorized data and can save downlo
 | Files | `list_course_files`, `read_course_file`, `download_course_file` |
 | Discussions | `list_course_forums`, `list_forum_discussions`, `get_forum_posts` |
 | Change tracking | `check_course_changes` |
+| Study planning | `get_deadline_radar`, `get_weekly_study_plan` |
+| Local study state and page | `record_study_progress`, `write_study_dashboard` |
 
-Every remote tool is annotated read-only. Local downloads are content-addressed `.bin` files. PDF, text/source, and ZIP parsing runs with strict size, time, path, and memory limits.
+Every Moodle operation is read-only. Local downloads, snapshots, progress records and dashboard files are separately marked as local writes. PDF, text/source, and ZIP parsing runs with strict size, time, path, and memory limits.
 
 ## Architecture
 
@@ -29,8 +31,9 @@ Codex / ChatGPT desktop
 plugins/moodle-codex/server.mjs
         ├── fixed read-only tool allowlist
         ├── MoodleClient ── HTTPS POST ── Moodle Web Services
+        ├── study assistant ── radar, plan and status evaluation
         ├── bounded parser worker ── PDF / UTF-8 text / ZIP
-        └── local state ── downloads and per-user course snapshots
+        └── local state ── downloads, snapshots, progress and dashboard
 ```
 
 The repository is also a Codex marketplace. `.agents/plugins/marketplace.json` points to the plugin package at `plugins/moodle-codex`.
@@ -178,8 +181,10 @@ Tests use synthetic fixtures, including hostile filenames, cross-origin download
 
 ## Security and privacy
 
-Read [SECURITY.md](SECURITY.md) before reporting a vulnerability. Course downloads and snapshots may contain private academic material; keep `MOODLE_DATA_DIR` outside shared or synced folders.
+Read [SECURITY.md](SECURITY.md) before reporting a vulnerability. Course downloads, snapshots, progress and dashboards may contain private academic material; keep `MOODLE_DATA_DIR` outside shared or synced folders.
 
-## License
+## Upstream reuse and license
+
+The study-assistant product layer is adapted from `jiujiastudy/jiujiastudy` under MIT. Moodle for Codex keeps its official-Web-Services authentication and fixed read-only Moodle boundary; it does not include the upstream Canvas write or browser-login paths. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 [MIT](LICENSE)

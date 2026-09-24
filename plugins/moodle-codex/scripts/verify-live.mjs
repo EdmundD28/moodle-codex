@@ -22,6 +22,9 @@ try {
   if(!course)throw Error(coursePattern ? 'No visible course matched MOODLE_VERIFY_COURSE.' : 'No visible Moodle course is available.');
   const files=(await call('list_course_files',{course_id:course.id})).files;
   console.log(JSON.stringify({course:course.shortname,files:files.length}));
+  await probe('deadline_radar',async()=>{const r=await call('get_deadline_radar',{course_ids:[course.id],days:14});return {counts:r.counts,calendar_complete:r.coverage.calendar_complete};});
+  await probe('weekly_plan',async()=>{const r=await call('get_weekly_study_plan',{course_ids:[course.id],days:7});return {items:r.plan.items.length,state:r.plan.state.label};});
+  await probe('study_dashboard',async()=>{const r=await call('write_study_dashboard',{course_ids:[course.id],days:7});return {html_path:r.html_path,json_path:r.json_path};});
   const pdf=files.find(f=>/\.pdf$/i.test(f.filename)&&/assignment|plc/i.test(f.filename));
   if(pdf) await probe('pdf',async()=>{const r=await call('read_course_file',{course_id:course.id,file_id:pdf.file_id,page:1,page_count:1});return {filename:pdf.filename,pages:r.content.total_pages,text_characters:r.content.pages[0].total_characters};});
   if(pdf) await probe('download',async()=>{const r=await call('download_course_file',{course_id:course.id,file_id:pdf.file_id});return {bytes:r.bytes,sha256:r.sha256};});

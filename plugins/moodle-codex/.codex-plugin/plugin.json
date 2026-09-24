@@ -1,26 +1,26 @@
 {
   "name": "moodle-codex",
-  "version": "0.1.2+codex.20260924110727",
-  "description": "Read Moodle courses, files, forums, feedback, deadlines, and changes from Codex.",
+  "version": "0.1.2+codex.20260924142606",
+  "description": "Read Moodle safely and turn course data into deadline radar and study plans.",
   "author": {
     "name": "Edmund Dai"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Moodle for Codex",
-    "shortDescription": "Read Moodle safely from Codex.",
-    "longDescription": "Connects Codex to a Moodle site's official Web Services API through a local, read-only MCP server for courses, files, forums, feedback, deadlines, and change checks.",
+    "shortDescription": "Read Moodle and plan study safely.",
+    "longDescription": "Connects Codex to Moodle's official Web Services API through a local, read-only MCP server, then builds deadline radar, weekly plans and local study dashboards without writing to Moodle.",
     "developerName": "Edmund Dai",
     "category": "Productivity",
     "capabilities": [
       "Read",
-      "Course data"
+      "Course data",
+      "Local study planning"
     ],
     "defaultPrompt": [
       "Show my Moodle courses.",
       "What Moodle deadlines are coming up?",
-      "Check my Moodle assignment status.",
-      "Summarize the latest changes in my course."
+      "Build my Moodle study plan."
     ],
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.png",

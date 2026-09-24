@@ -4,6 +4,14 @@ import { homedir } from 'node:os';
 import { fileCatalog, downloadFile, saveDownload, parseFile } from './files.mjs';
 import { checkChanges } from './changes.mjs';
 import { redactSecrets } from './moodle-client.mjs';
+import {
+  buildWeeklyPlan,
+  collectStudySnapshot,
+  readStudyState,
+  studyScope,
+  updateStudyState,
+  writeStudyDashboard,
+} from './study-assistant.mjs';
 
 const id = z.number().int().positive();
 const dataRoot = () => process.env.MOODLE_DATA_DIR || join(homedir(), 'Documents', 'Codex', 'moodle-codex-data');
@@ -52,5 +60,44 @@ export function registerExtendedTools(server, { withClient, success, annotations
   });
   register('check_course_changes', 'Compare course descriptions, file metadata and assignment deadlines with the previous local snapshot. First call establishes a baseline; incomplete assignment reads preserve their baseline. Writes local snapshots only; does not schedule checks.', { course_id:id },
     (c,a) => checkChanges(c,a.course_id,join(dataRoot(),'snapshots')), true);
+  const courseIds = z.array(id).max(12).default([]);
+  const deadlineDays = z.number().int().min(1).max(90).default(14);
+  register('get_deadline_radar', 'Combine visible Moodle assignment dates, actionable calendar events and bounded submission-status checks into a per-course deadline radar. It reports gaps and uncertainty; it never modifies Moodle.', {
+    course_ids: courseIds, days: deadlineDays,
+  }, async (c,a) => {
+    const snapshot = await collectStudySnapshot(c,{courseIds:a.course_ids,days:a.days});
+    return { generated_at:new Date(snapshot.now*1000).toISOString(), ...snapshot.radar, coverage:snapshot.coverage,
+      limitations:'Standard assignments and actionable calendar events only. Dates hidden inside unread files or external systems are not discovered.' };
+  });
+  register('get_weekly_study_plan', 'Build a deterministic 1-14 day study plan from the deadline radar, visible incomplete course items and local progress. Reads Moodle and local state only.', {
+    course_ids: courseIds, days: z.number().int().min(1).max(14).default(7),
+  }, async (c,a) => {
+    const snapshot = await collectStudySnapshot(c,{courseIds:a.course_ids,days:Math.max(14,a.days),includeContents:true});
+    const progress = await readStudyState(join(dataRoot(),'study-state'),snapshot.scope);
+    const plan = buildWeeklyPlan({courses:snapshot.courses,contents:snapshot.contents,radar:snapshot.radar,progress,now:snapshot.now,days:a.days});
+    return { plan, radar:snapshot.radar, progress:{updated_at:progress.updated_at,mood:progress.mood}, coverage:snapshot.coverage };
+  });
+  register('record_study_progress', 'Record completion, reopening or a short mood/status note in local per-account study state. This writes only under MOODLE_DATA_DIR and never writes to Moodle.', {
+    action: z.enum(['complete','reopen','mood','clear_mood']),
+    item_id: z.string().min(1).max(300).optional(),
+    mood: z.enum(['steady','motivated','tired','stuck','overloaded','sick']).optional(),
+    note: z.string().max(500).optional(),
+  }, async (c,a) => {
+    const site = await c.getSiteInfo();
+    if(!site.userid) throw Error('Cannot scope study state without the current Moodle user ID.');
+    const scope = studyScope(c.baseUrl,site.userid);
+    const result = await updateStudyState(join(dataRoot(),'study-state'),scope,{action:a.action,itemId:a.item_id,mood:a.mood,note:a.note});
+    return { action:a.action, mood:result.mood, item:result.item, local_path:result.path,
+      notice:'Local study state updated. Moodle was not modified.' };
+  }, true);
+  register('write_study_dashboard', 'Generate a local HTML and JSON study dashboard from live Moodle data plus local progress. Files stay under MOODLE_DATA_DIR; Moodle is never modified.', {
+    course_ids: courseIds, days: z.number().int().min(1).max(14).default(7),
+  }, async (c,a) => {
+    const snapshot = await collectStudySnapshot(c,{courseIds:a.course_ids,days:Math.max(14,a.days),includeContents:true});
+    const progress = await readStudyState(join(dataRoot(),'study-state'),snapshot.scope);
+    const plan = buildWeeklyPlan({courses:snapshot.courses,contents:snapshot.contents,radar:snapshot.radar,progress,now:snapshot.now,days:a.days});
+    const files = await writeStudyDashboard(join(dataRoot(),'study-dashboards'),snapshot.scope,snapshot.radar,plan);
+    return { ...files, generated_at:plan.generated_at, state:plan.state, counts:snapshot.radar.counts,
+      notice:'Local dashboard files written. Moodle was not modified.', coverage:snapshot.coverage };
+  }, true);
 }
-

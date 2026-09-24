@@ -2,15 +2,16 @@
 
 This plugin uses Moodle's official Web Services REST endpoint. It is read-only.
 
-Requires Node.js 22.13 or later (tested on Node.js 24.19). All Moodle actions remain read-only; downloads and change snapshots write only local files.
+Requires Node.js 22.13 or later (tested on Node.js 24.19). All Moodle actions remain read-only; downloads, change snapshots, study progress and dashboards write only local files.
 
 ## Capability groups
 
 - Files: list_course_files, read_course_file, download_course_file. PDF text pages and UTF-8 source/text are supported. ZIPs can be listed and selected source members read without extraction or execution. Downloads require same-origin HTTPS Moodle pluginfile URLs freshly returned by the course API; redirects are rejected.
 - Feedback: list_course_forums, list_forum_discussions, get_forum_posts, get_assignment_feedback, get_grading_definition. Permissions remain server-controlled. Rubric definitions are optional; access denial must be reported, not bypassed.
 - Changes: check_course_changes creates a persistent local baseline and compares course descriptions, file metadata, and assignment deadlines. Partial assignment reads preserve the last valid assignment baseline. Missing resources are reported as no longer visible, not deleted. It does not compare binary file contents or schedule background runs.
-- Optional MOODLE_DATA_DIR sets the local download/snapshot root; default is ~/Documents/Codex/moodle-codex-data. Snapshots may include private course text and are isolated by Moodle site, user and course. Keep this directory private. A leftover snapshot .lock after an interrupted process must be inspected before removing it.
-- check_connection returns build and feature_set=stages-1-4 so a newly loaded installation can be distinguished from a stale task.
+- Study assistant: get_deadline_radar combines standard assignments with actionable calendar events and bounded submission-status checks. get_weekly_study_plan adds visible incomplete course items. record_study_progress and write_study_dashboard write only local per-account state/pages; completion is recorded only when the user says so.
+- Optional MOODLE_DATA_DIR sets the local data root; default is ~/Documents/Codex/moodle-codex-data. Snapshots, study state and dashboards may include private course text and are isolated by Moodle site and user. Keep this directory private. A leftover `.lock` after an interrupted process must be inspected before removing it.
+- check_connection returns build and feature_set=stages-1-5 so a newly loaded installation can be distinguished from a stale task.
 
 Optional read-only API functions for forums and rubric definitions:
 

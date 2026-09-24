@@ -7,12 +7,13 @@ import { redactSecrets } from '../src/moodle-client.mjs';
 // Recovery uses the exact same server, schemas and read-only allowlist as MCP.
 const allowed = new Set(['check_connection', 'get_site_info', 'list_courses',
   'get_course_contents', 'list_assignments', 'get_submission_status', 'get_upcoming_deadlines',
+  'get_deadline_radar', 'get_weekly_study_plan', 'record_study_progress', 'write_study_dashboard',
   'list_course_files', 'download_course_file', 'read_course_file', 'list_course_forums',
   'list_forum_discussions', 'get_forum_posts', 'get_assignment_feedback', 'get_grading_definition', 'check_course_changes']);
 const client = new Client({ name: 'moodle-recovery', version: '1.0.0' });
 try {
   const [name, argumentFile, outputFile] = process.argv.slice(2);
-  if (!allowed.has(name)) throw new Error('Unsupported read-only tool');
+  if (!allowed.has(name)) throw new Error('Unsupported Moodle for Codex tool');
   const args = argumentFile ? JSON.parse(await readFile(argumentFile, 'utf8')) : {};
   if (!args || Array.isArray(args) || typeof args !== 'object') throw new Error('Arguments must be an object');
   const transport = new StdioClientTransport({ command: process.execPath,
@@ -36,4 +37,3 @@ try {
   // close also cleans up a partially connected transport.
   await client.close().catch(() => {});
 }
-
