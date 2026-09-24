@@ -93,8 +93,12 @@ function requiredString(name, value) {
 function normalizeBaseUrl(value) {
   const baseUrl = requiredString("MOODLE_BASE_URL", value).replace(/\/+$/, "");
   const parsed = new URL(baseUrl);
-  if (!/^https?:$/.test(parsed.protocol)) {
-    throw new Error("MOODLE_BASE_URL must use http or https.");
+  if (parsed.protocol !== "https:") throw new Error("MOODLE_BASE_URL must use https.");
+  if (parsed.username || parsed.password) {
+    throw new Error("MOODLE_BASE_URL must not contain embedded credentials.");
+  }
+  if (parsed.search || parsed.hash) {
+    throw new Error("MOODLE_BASE_URL must not contain a query string or fragment.");
   }
   return parsed.toString().replace(/\/$/, "");
 }

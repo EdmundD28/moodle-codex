@@ -48,6 +48,20 @@ test("calls Moodle REST with a POST body and returns JSON", async () => {
   assert.equal(request.init.body.get("wsfunction"), "core_webservice_get_site_info");
 });
 
+test("rejects unsafe Moodle base URLs before sending credentials", () => {
+  for (const baseUrl of [
+    "http://moodle.example",
+    "https://user:pass@moodle.example",
+    "https://moodle.example/?redirect=https://evil.example",
+    "https://moodle.example/#fragment",
+  ]) {
+    assert.throws(
+      () => new MoodleClient({ baseUrl, token: "secret-token", fetchImpl: async () => assert.fail("network called") }),
+      /MOODLE_BASE_URL/,
+    );
+  }
+});
+
 test("turns Moodle exceptions into bounded errors without exposing the token", async () => {
   const client = new MoodleClient({
     baseUrl: "https://moodle.example",
