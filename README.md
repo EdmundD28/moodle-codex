@@ -4,6 +4,8 @@
 
 # Moodle for Codex
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/edmundd28/moodle-codex)](https://m8ven.ai/mcp/edmundd28/moodle-codex)
+
 A local-first Codex plugin for reading Moodle courses, assignments, deadlines, files, forums, feedback, rubrics, and course changes through Moodle's official Web Services API, then turning that evidence into a deadline radar and study plan.
 
 The project is deliberately narrow: it reads authorized data and can save downloads or change snapshots locally. It cannot submit work, post messages, enrol users, change grades, or silently fall back to browser scraping.
