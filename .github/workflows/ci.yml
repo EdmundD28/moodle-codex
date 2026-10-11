@@ -22,6 +22,7 @@ jobs:
           cache: npm
           cache-dependency-path: plugins/moodle-codex/package-lock.json
       - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm test
 
   setup-gui:

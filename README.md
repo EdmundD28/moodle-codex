@@ -181,6 +181,10 @@ npm test
 
 Tests use synthetic fixtures, including hostile filenames, cross-origin download attempts, oversized payloads, corrupt snapshots, ZIP traversal, transport recovery, and the exact MCP tool inventory. GitHub Actions runs the same clean install and test sequence.
 
+CI also rejects high or critical known vulnerabilities in production dependencies. The MCP contract test checks all four permission hints and input schemas for all 20 tools, including rejection of invalid inputs before Moodle access.
+
+Version 0.1.3 pins `@modelcontextprotocol/sdk` to 1.31.0, which patches [GHSA-6qxp-vccf-f47h](https://github.com/advisories/GHSA-6qxp-vccf-f47h). Existing installations need the updated plugin and a fresh dependency install; an older cached copy still contains the older dependency. See [release validation and live-test limitations](docs/RELEASE-0.1.3.md). External trust scores describe the commit last scanned and may lag behind this repository.
+
 ## Security and privacy
 
 Read [SECURITY.md](SECURITY.md) before reporting a vulnerability. Course downloads, snapshots, progress and dashboards may contain private academic material; keep `MOODLE_DATA_DIR` outside shared or synced folders.

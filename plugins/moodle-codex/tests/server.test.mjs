@@ -55,8 +55,23 @@ test("MCP server advertises the intended Moodle-read-only tools and declares loc
         !localWriters.has(tool.name),
         tool.name + " has the wrong readOnlyHint",
       );
+      assert.equal(tool.annotations?.destructiveHint, false, tool.name + " must not be destructive");
+      assert.equal(tool.annotations?.idempotentHint, !localWriters.has(tool.name), tool.name + " has the wrong idempotentHint");
+      assert.equal(tool.annotations?.openWorldHint, true, tool.name + " accesses Moodle");
+      assert.equal(tool.inputSchema?.type, "object", tool.name + " must publish an object input schema");
+      assert.ok(tool.inputSchema.properties, tool.name + " must publish input properties");
     }
-    assert.ok(listed.tools.every((tool) => tool.annotations?.destructiveHint === false));
+
+    // Invalid inputs must fail at the MCP boundary, before configuration or network access.
+    for (const [name, args] of [
+      ["get_course_contents", { course_id: -1 }],
+      ["read_course_file", { course_id: 1, file_id: "https://example.invalid/file.pdf" }],
+      ["record_study_progress", { action: "submit" }],
+    ]) {
+      const rejected = await client.callTool({ name, arguments: args });
+      assert.equal(rejected.isError, true, name + " must reject invalid input");
+      assert.match(rejected.content[0].text, /Input validation error/);
+    }
 
     const result = await client.callTool({
       name: "check_connection",

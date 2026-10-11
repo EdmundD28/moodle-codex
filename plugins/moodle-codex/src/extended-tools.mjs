@@ -17,7 +17,13 @@ const id = z.number().int().positive();
 const dataRoot = () => process.env.MOODLE_DATA_DIR || join(homedir(), 'Documents', 'Codex', 'moodle-codex-data');
 export function registerExtendedTools(server, { withClient, success, annotations }) {
   const register = (name, description, inputSchema, operation, localWrite = false) => server.registerTool(name,
-    { description, inputSchema, annotations: { ...annotations, ...(localWrite ? { readOnlyHint: false, idempotentHint: false } : {}) } },
+    { description, inputSchema, annotations: {
+      ...annotations,
+      readOnlyHint: !localWrite,
+      destructiveHint: false,
+      idempotentHint: !localWrite,
+      openWorldHint: true,
+    } },
     args => withClient(async client => success(redactSecrets(await operation(client,args), client.token), name + ' completed. Moodle was not modified.')));
   register('list_course_files', 'List downloadable files exposed by the course contents API. File IDs are used by read_course_file and download_course_file.', { course_id: id }, async (c,a) => ({
     files: fileCatalog(await c.getCourseContents(a.course_id)), coverage: 'Course resource files only; not private submissions, external sites or forum attachments.' }));

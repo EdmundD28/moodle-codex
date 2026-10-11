@@ -11,7 +11,7 @@ async function call(name,args={}) {
   if(r.isError) throw Error(r.content?.[0]?.text || 'Tool failed');
   return r.structuredContent;
 }
-async function probe(name,run){try{console.log(JSON.stringify({probe:name,ok:true,result:await run()}));}catch(e){console.log(JSON.stringify({probe:name,ok:false,error:e.message}));}}
+async function probe(name,run){try{console.log(JSON.stringify({probe:name,ok:true,result:await run()}));}catch(e){console.log(JSON.stringify({probe:name,ok:false,error:e.message}));process.exitCode=1;}}
 try {
   await c.connect(transport);
   console.log(JSON.stringify({tools:(await c.listTools()).tools.map(t=>t.name)}));

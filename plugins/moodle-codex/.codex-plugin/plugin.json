@@ -1,6 +1,6 @@
 {
   "name": "moodle-codex",
-  "version": "0.1.2+codex.20260924142606",
+  "version": "0.1.3",
   "description": "Read Moodle safely and turn course data into deadline radar and study plans.",
   "author": {
     "name": "Edmund Dai"

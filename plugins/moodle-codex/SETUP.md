@@ -24,6 +24,8 @@ Limits: 20 MiB download, 15-second parser deadline, 128 MiB worker heap, 5 PDF p
 
 Validation: `npm test` uses synthetic fixtures and makes no Moodle requests. `npm run verify:live` selects the newest visible course by default and exercises available read-only capabilities through the MCP transport. Set `MOODLE_VERIFY_COURSE` to a course-name regular expression when you need a specific course. It prints bounded counts and status only, uses an isolated local data directory by default, and makes no Moodle writes.
 
+The live verifier exits unsuccessfully if any attempted probe fails; unavailable optional capabilities remain visible in its output. Release 0.1.3 uses the patched MCP SDK 1.31.0. Update the plugin and run `npm ci` in its directory to replace older installed dependencies.
+
 API references: https://github.com/moodle/moodle/blob/MOODLE_405_STABLE/mod/forum/externallib.php and https://github.com/moodle/moodle/blob/MOODLE_405_STABLE/lib/classes/grading_external.php.
 
 ## Required values
