@@ -183,7 +183,7 @@ Tests use synthetic fixtures, including hostile filenames, cross-origin download
 
 CI also rejects high or critical known vulnerabilities in production dependencies. The MCP contract test checks all four permission hints and input schemas for all 20 tools, including rejection of invalid inputs before Moodle access.
 
-Version 0.1.3 pins `@modelcontextprotocol/sdk` to 1.31.0, which patches [GHSA-6qxp-vccf-f47h](https://github.com/advisories/GHSA-6qxp-vccf-f47h). Existing installations need the updated plugin and a fresh dependency install; an older cached copy still contains the older dependency. See [release validation and live-test limitations](docs/RELEASE-0.1.3.md). External trust scores describe the commit last scanned and may lag behind this repository.
+Version 0.1.4 pins `@modelcontextprotocol/sdk` to 1.32.2 and `zod` to 4.6.7 and refreshes vulnerable transitive dependencies. PDF and ZIP parser versions are unchanged. Existing installations need the updated plugin and a fresh dependency install; an older cached copy still contains the older dependencies. See [0.1.4 validation and live-test limitations](docs/RELEASE-0.1.4.md) and the [previous release evidence](docs/RELEASE-0.1.3.md). External trust scores describe the commit last scanned and may lag behind this repository.
 
 ## Security and privacy
 
