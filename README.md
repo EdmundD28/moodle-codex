@@ -105,7 +105,7 @@ This is the complete flow that was tested with UNSW Moodle. Use your own UNSW ac
 8. **Restart and verify Codex.** Fully exit and reopen Codex so the new process inherits the saved environment variables. Install or enable the plugin, start a new task, and ask:
 
    ```text
-   检查 Moodle 连接，并列出我的课程。
+   Check the Moodle connection and list my courses.
    ```
 
 The official mobile-service token can have broader permissions than this plugin exposes. This plugin deliberately calls only its fixed read-only tool set, but that does not make the underlying token itself read-only. Revoke it through Moodle and remove the `MOODLE_TOKEN` user environment variable if the callback or token is ever exposed.
@@ -127,7 +127,7 @@ codex plugin marketplace add .
 Then fully restart the desktop app, open the Plugins Directory, select **Moodle for Codex**, and install/enable **Moodle for Codex**. Start a new task and ask:
 
 ```text
-检查 Moodle 连接，并告诉我 connected、build 和 feature_set。
+Check the Moodle connection and report connected, build, and feature_set.
 ```
 
 Configuration saved is not the same as a live connection. Treat the setup as complete only when `connected` is true and the returned build matches the manifest.
